@@ -49,7 +49,7 @@ public class Campo {
 
 	boolean abrir() {
 
-		if (!this.aberto && this.marcado) {
+		if (!this.aberto && !this.marcado) {
 			this.aberto = true;
 
 			if (this.minado) {
@@ -59,16 +59,71 @@ public class Campo {
 			if (this.vizinhaSegura()) {
 				this.vizinhos.forEach(v -> v.abrir());
 			}
-			
+
 			return true;
-			
-		}else {
-		
+
+		} else {
+
 			return false;
-		}		
+		}
 	}
 
 	boolean vizinhaSegura() {
 		return this.vizinhos.stream().noneMatch(v -> v.minado);
+	}
+
+	void minar() {
+		this.minado = true;
+	}
+
+	public boolean isMarcado() {
+		return this.marcado;
+	}
+
+	public boolean isAberto() {
+		return this.aberto;
+	}
+
+	public boolean isFechado() {
+		return !this.isAberto();
+	}
+
+	public int getLinha() {
+		return linha;
+	}
+
+	public int getColuna() {
+		return coluna;
+	}
+
+	boolean objetivoAlcancado() {
+		boolean desvendado = !this.minado && this.aberto;
+		boolean protegido = this.minado && this.marcado;
+
+		return desvendado || protegido;
+	}
+
+	long minasNaVizinha() {
+		return this.vizinhos.stream().filter(v -> v.minado).count();
+	}
+
+	void reiniciar() {
+		this.aberto = false;
+		this.minado = false;
+		this.marcado = false;
+	}
+
+	public String toString() {
+		if (this.marcado) {
+			return "x";
+		} else if (this.aberto && this.minado) {
+			return "*";
+		} else if (this.aberto && this.minasNaVizinha() > 0) {
+			return Long.toString(minasNaVizinha());
+		} else if (this.aberto) {
+			return "";
+		} else {
+			return "?";
+		}
 	}
 }
